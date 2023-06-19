@@ -306,7 +306,7 @@ function getData(inputString, name) {
     const result = [];
     var count = 0, lastplace = 0;
     var day, time, room, teacher, date;
-    inputString = inputString.replaceAll("Chủ nhật", "Thứ nhật")
+    inputString = inputString.replaceAll("Chủ nhật", "Thứ 8")
     var dataSplit = inputString.split("Thứ");
     for (var i = 1; i < dataSplit.length; i++) {
         var temp = dataSplit[i].split(",");
@@ -332,7 +332,7 @@ function drawTable() {
     tkb_div.append('<h5 style="text-align:center;">Các lỗi vui lòng báo về nguyenquochung.workvn@gmail.com</h2>')
     tkb_div.append('<h5 style="text-align:center;">Chúc bạn học tập tốt!</h2>')
 
-    for (var i = 1; i <= 2; i++) {
+    for (var i = 1; i <= 3; i++) {
         var count = 0;
         var table_id = "tkbPreview" + i;
         tables[i] = $('<table style="table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
@@ -392,21 +392,24 @@ function updateTable(lecturelist, state) {
             end_time_date = start_time_date;
         }
         var loop = start_time_date;
+        //Thứ 8 = 8
+        var ngayTrongTuan = lecturelist[i].day[4];
+        if (ngayTrongTuan == 8) ngayTrongTuan = 1;
+        else ngayTrongTuan = ngayTrongTuan - 1;
+
 
         //đi qua chuỗi ngày để update vào lịch
         while (loop <= end_time_date) {
-            const diffTime = Math.abs(loop - start_date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const hour = extractHoursFromString(lecturelist[i].time);
-            for (let j = hour[0]; j <= hour[1]; j++) {
-                var vitri = 1;
-                if (diffDays >= 70) {
-                    vitri = vitri + 14*70 + (j-7)*70 + diffDays;
-                } else {
-                    vitri = vitri + (j-7)*70 + diffDays;
+            if (loop.getDay() == ngayTrongTuan) {
+                const diffTime = Math.abs(loop - start_date);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const hour = extractHoursFromString(lecturelist[i].time);
+                for (let j = hour[0]; j <= hour[1]; j++) {
+                    var vitri = 1 + 14*70*(parseInt(diffDays/70)) + (j-8)*70 + (diffDays - 70*(parseInt(diffDays/70)));
+                    console.log("vị trí " + vitri + " " + lecturelist[i].name + " " + parseInt(diffDays/70) + " " + (j-7) + " " + diffDays)
+                    if (state) dienLich(vitri, lecturelist[i].name)
+                    else xoaLich(vitri, lecturelist[i].name)
                 }
-                if (state) dienLich(vitri, lecturelist[i].name)
-                else xoaLich(vitri, lecturelist[i].name)
             }
             loop.setDate(loop.getDate() + 1);
         }
@@ -434,6 +437,7 @@ function extractHoursFromString(str) {
 
 //Điền vào lịch
 function dienLich(vitri, name) {
+    console.log("Điền lịch " + name + " vào vị trí " + vitri);
     var element = document.getElementById(vitri);
     element.classList.add(name);
     var ele = $("#" + vitri);
@@ -451,6 +455,7 @@ function dienLich(vitri, name) {
 
 //Xoá khỏi lịch
 function xoaLich(vitri, name) {
+    console.log("Xoá lịch " + name + " khỏi vị trí " + vitri);
     var element = document.getElementById(vitri);
     element.classList.remove(name);
     var ele = $("#" + vitri);
