@@ -136,7 +136,7 @@ GM_addStyle(`
     }
 
     .starttimerow {
-        padding: 1rem 0.5rem;
+        padding: 5px;
         vertical-align: middle;
         border-top: 1px solid #edeef2;
         background-color: #07689F;
@@ -350,7 +350,7 @@ function drawTable() {
             for (var c = 0; c < cols; c++) {
                 if ((c + 1) % 8) {
                     count++;
-                    $('<td id="' + (70 * (i - 1) * 14 + count) + '" style="border:solid green 1px;height:1px;">' + "+" + '</td>').appendTo(tr);
+                    $('<td id="' + (70 * (i - 1) * 14 + count) + '" style="border:solid green 0.1px;height:1px">' + "+" + '</td>').appendTo(tr);
                 } else {
                     //divider
                     $('<td style="height:0px; width: 15px; background-color: #fff"></td>').appendTo(tr);
