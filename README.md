@@ -3,6 +3,8 @@
 ## Author
 
 * quochungcyou
+* Idea khởi nguồn và code tham khảo từ anh Khoa (https://github.com/28dec/qldt_prepare_schedule). Người đã tạo ra tool miễn phí cho các thế hệ sinh viên ptit sử dụng rất nhiều năm
+
 
 ## Description
 
