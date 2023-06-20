@@ -92,7 +92,7 @@ GM_addStyle(`
       }
 
     .editTKB {
-        background-color:#10470b !important;
+        background-color:#AD171C !important;
     }
 
     .editTKB > i {
@@ -129,7 +129,7 @@ GM_addStyle(`
     }
 
     .tkb_preview_table > thead {
-        background-color: #07689F;
+        background-color: #AD171C;
     }
 
     .tkb_preview_table > thead > tr > th {
@@ -169,7 +169,7 @@ GM_addStyle(`
         padding: 1px;
         vertical-align: middle;
         border-top: 0.2px solid #edeef2;
-        background-color: #07689F;
+        background-color: #AD171C;
         color: #fff;
         max-width: 30px;
         max-height: 10px;
@@ -285,6 +285,7 @@ window.onload = function () {
 //Cào mã môn học và tên môn học
 function caoMaMon() {
     var maMon = new Map();
+    maMon.clear();
     let elements = $(".editTKBcheckbox");
     for (let i = 0; i < elements.length; i++) {
         let ele = $(elements[i]);
@@ -370,7 +371,7 @@ function tkbLich() {
         //Bật chế độ TKB
         addEdit();
         //Cào mã môn học và tên môn học
-        caoMaMon();
+        
 
     }
 }
@@ -389,6 +390,8 @@ function addEdit() {
     $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
     $("#tkb_div").attr("style", "display: block !important") //Hiện TKB
     elements.append(`<input type="checkbox" class="editTKBcheckbox" style="margin-left: 10px;">`) //Thêm checkbox mới
+    caoMaMon();
+
 }
 function removeEdit() {
     console.log("Tắt chế độ TKB");
@@ -418,7 +421,7 @@ $(document).on("click", ".editTKBcheckbox", function (e) {
     let text = checkbox.closest("tr").find("td:nth-child(10)").text();
     let malop = checkbox.closest("tr").find("td:nth-child(7)").text();
 
-    
+
     GM_setValue(name + malop, checkbox.prop("checked"));
     let result = getData(text, name);
 
@@ -501,7 +504,7 @@ function keepUpdateCheckBox() {
             tables[i] = $('<table style="table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
             var tkb_separator, start_time_in_hr;
             for (var r = 0; r < rows; r++) {
-                if (r % 2) tkb_separator = 'border-bottom:2px solid blue;'
+                if (r % 2) tkb_separator = 'border-bottom:2px solid #ad171c;'
                 else tkb_separator = '';
                 start_time_in_hr = r + 7;
                 //Thêm hàng, thời gian bắt đầu tiết
