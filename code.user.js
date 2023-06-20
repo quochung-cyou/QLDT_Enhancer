@@ -573,7 +573,7 @@ function keepUpdateCheckBox() {
             tkb_div.append(tables[i])
 
         }
-        tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-07-03"></input><br></div>');
+        tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-08-14"></input><br></div>');
         tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
         tkb_div.append('<div class="danhsachmonhoc_text">Các môn đã đăng ký</div>')
         tkb_div.append('<div class="danhsachmonhoc"></div>')
