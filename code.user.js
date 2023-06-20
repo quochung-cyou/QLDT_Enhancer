@@ -413,7 +413,7 @@ function updateTable(lecturelist, state) {
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 const hour = extractHoursFromString(lecturelist[i].time);
                 for (let j = hour[0]; j <= hour[1]; j++) {
-                    var vitri = 1 + 14*70*(parseInt(diffDays/70)) + (j-8)*70 + (diffDays - 70*(parseInt(diffDays/70)));
+                    var vitri = 1 + 14*70*(parseInt(diffDays/70)) + (j-7)*70 + (diffDays - 70*(parseInt(diffDays/70)));
                     console.log("vị trí " + vitri + " " + lecturelist[i].name + " " + parseInt(diffDays/70) + " " + (j-7) + " " + diffDays)
                     if (state) dienLich(vitri, lecturelist[i].name)
                     else xoaLich(vitri, lecturelist[i].name)
