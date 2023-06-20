@@ -447,7 +447,7 @@ $(document).on("click", ".editTKBcheckbox", function (e) {
 
     GM_setValue(name + malop + to, checkbox.prop("checked")); //set ô này trạng thái
     GM_setValue("clicked_" + name, malop + to); //set ô này đã click là mã lớp này
-    let result = getData(text, name);
+    let result = getData(text, name, malop, to);
 
 
 
@@ -492,7 +492,7 @@ function keepUpdateCheckBox() {
             //update lại trạng thái nút theo lưu state
             checkbox.prop("checked", result);
             //Update lại table
-            result = getData(text, name);
+            result = getData(text, name, malop, to);
             console.log("Cập nhật lại bảng cho môn tự động " + name)
             updateTable(result, checkbox.prop("checked"));
             
@@ -502,19 +502,21 @@ function keepUpdateCheckBox() {
 
 
     class Lecture {
-        constructor(name, day, time, room, teacher, date) {
+        constructor(name, day, time, room, teacher, date, malop, to) {
             this.name = name;
             this.day = day;
             this.time = time;
             this.room = room;
             this.teacher = teacher;
             this.date = date;
+            this.malop = malop;
+            this.to = to;
         }
 
     }
 
 
-    function getData(inputString, name) {
+    function getData(inputString, name, malop, to) {
         const result = [];
         var count = 0, lastplace = 0;
         var day = "none", time = "none", room = "none", teacher = "none", date = "none";
@@ -527,7 +529,7 @@ function keepUpdateCheckBox() {
             room = temp[2];
             teacher = temp[3];
             date = temp[temp.length - 1];
-            result.push(new Lecture(name, day, time, room, teacher, date));
+            result.push(new Lecture(name, day, time, room, teacher, date, malop, to));
         }
         return result;
     }
@@ -618,8 +620,8 @@ function keepUpdateCheckBox() {
                     for (let j = hour[0]; j <= hour[1]; j++) {
                         var vitri = 1 + 14 * 70 * (parseInt(diffDays / 70)) + (j - 7) * 70 + (diffDays - 70 * (parseInt(diffDays / 70)));
                     
-                        if (state) dienLich(vitri, lecturelist[i].name)
-                        else xoaLich(vitri, lecturelist[i].name)
+                        if (state) dienLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
+                        else xoaLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
                     }
                 }
                 loop.setDate(loop.getDate() + 1);
@@ -647,10 +649,10 @@ function keepUpdateCheckBox() {
     }
 
     //Điền vào lịch
-    function dienLich(vitri, name) {
+    function dienLich(vitri, name, malop, to) {
         
         var element = document.getElementById(vitri);
-        element.classList.add(name);
+        element.classList.add(name + malop + to);
         var ele = $("#" + vitri);
         if (element.classList.length == 2) {
             ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
@@ -666,9 +668,9 @@ function keepUpdateCheckBox() {
     }
 
     //Xoá khỏi lịch
-    function xoaLich(vitri, name) {
+    function xoaLich(vitri, name, malop, to) {
         var element = document.getElementById(vitri);
-        element.classList.remove(name);
+        element.classList.remove(name + malop + to);
         var ele = $("#" + vitri);
         if (element.classList.length == 2) {
             ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
