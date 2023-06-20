@@ -217,9 +217,10 @@ GM_addStyle(`
         border-collapse: collapse;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
+        background-color: #fefefe;
+        margin-left: 30%;
+        margin-right: 30%;
+        width: 40%;
     }
 
     input[type="date"]::-webkit-datetime-edit, input[type="date"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button {
