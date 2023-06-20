@@ -115,6 +115,11 @@ GM_addStyle(`
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
     }
 
+    .danhsachmonhoc_text {
+        text-align: center;
+        margin: auto;
+    }
+
     .tkb_preview_table {
         z-index: 1;
         height: auto;
@@ -145,6 +150,10 @@ GM_addStyle(`
         font-size: 8px;
         position: relative;
         border-bottom: 1px dotted black;
+    }
+
+    .tooltiptext {
+        font-size: 8px;
     }
 
     .cellqh .tooltiptext {
@@ -192,6 +201,17 @@ GM_addStyle(`
         margin-right: auto;
     }
 
+    .danhsachmonhoc {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+        background-color: #fefefe;
+        border-collapse: collapse;
+        flex-direction: column;
+    }
+
     .dropdownlecture {
         text-align: center;
         margin-bottom: 10px;
@@ -200,9 +220,10 @@ GM_addStyle(`
         border-collapse: collapse;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
+        background-color: #fefefe;
+        margin-left: 30%;
+        margin-right: 30%;
+        width: 40%;
     }
 
     input[type="date"]::-webkit-datetime-edit, input[type="date"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button {
@@ -296,18 +317,21 @@ function caoMaMon() {
         let ma = data.find("td:nth-child(2)").text();
         let ten = data.find("td:nth-child(3)").text();
         let lop = data.find("td:nth-child(7)").text();
-        GM_setValue(ma + lop, undefined);
-        GM_setValue(ma, ten);
-        console.log(ma + " " + ten)
+        let to  = data.find("td:nth-child(5)").text(); //tổ thực hành
+        GM_setValue(ma + lop + to, undefined); //Reset lưu state
+        GM_setValue("clicked_" + ma, false);
+        GM_setValue(ma + "_" + lop + "_" + to, ten); //Nhớ tên môn học
         maMon.set(ma, ten);
     }
-    if (unsafeWindow.maMon) unsafeWindow.maMon = maMon;
+    
     alert("Đã cào xong mã môn học và tên môn học, vui lòng chọn môn học trong dropdown")
     //Thêm vào dropdown
     var dropdown = $(".dropdownlecture");
+    dropdown.empty(); //xoá các dropdown cũ
     for (let [key, value] of maMon) {
         dropdown.append(`<option value="${key}">${key} - ${value}</option>`);
     }
+    unsafeWindow.maMon = maMon;
 }
 
 //Xử lí chọn môn học trong dropdown
@@ -330,10 +354,7 @@ $(document).on("change", ".dropdownlecture", function (e) {
     findInputBox.dispatchEvent(EVENTS.INPUT);
     findInputBox.dispatchEvent(EVENTS.BLUR);
 
-    $(".custom-control").attr("style", "display: none !important");
-    $(".editTKBcheckbox").remove();
-    let elements = $(".clickable.ng-untouched.ng-pristine.ng-valid");
-    elements.append(`<input type="checkbox" class="editTKBcheckbox" style="margin-left: 10px;">`)
+    addButton();
 })
 
 //Khi hover vào các cell
@@ -345,7 +366,6 @@ $(document).on("mouseover", ".cellqh", function (e) {
         if (classList[i] == "cellqh") continue;
         let tooltip = cell.find(".tooltiptext");
         let text = GM_getValue(classList[i]);
-        console.log(classList[i] + " - " + text)
         if (text == undefined) text = classList[i];
         tooltip.text(tooltip.text() + " " + text);
     }
@@ -373,7 +393,6 @@ function tkbLich() {
     } else {
         //Bật chế độ TKB
         addEdit();
-        //Cào mã môn học và tên môn học
         
 
     }
@@ -382,7 +401,7 @@ function tkbLich() {
 
 //Thay nút edit
 function addEdit() {
-    let elements = $(".clickable.ng-untouched.ng-pristine.ng-valid");
+    let elements = $(".clickable.ng-untouched.ng-pristine.ng-valid"); //get form
     if (elements.length == 0) {
         alert("Không tìm thấy môn học, vui lòng đợi trang load xong hoàn toàn dữ liệu");
         return;
@@ -390,11 +409,10 @@ function addEdit() {
     var float = $(".float");
     float.addClass("editTKB"); //Hiện nút edit sẽ có màu khác
     console.log("Bật chế độ TKB");
-    $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
-    $("#tkb_div").attr("style", "display: block !important") //Hiện TKB
-    elements.append(`<input type="checkbox" class="editTKBcheckbox" style="margin-left: 10px;">`) //Thêm checkbox mới
+    //Cào mã môn học và thêm nút
+    addButton();
     caoMaMon();
-
+    
 }
 function removeEdit() {
     console.log("Tắt chế độ TKB");
@@ -405,6 +423,18 @@ function removeEdit() {
     $("#tkb_div").attr("style", "display: none !important") //Ẩn TKB
 }
 
+//Thêm đống nút bấm custom
+function addButton() {
+    $(".editTKBcheckbox").remove();
+    $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
+    $("#tkb_div").attr("style", "display: block !important") //Hiện TKB
+    let elements = $(".clickable.ng-untouched.ng-pristine.ng-valid"); //get form
+    for (let i = 0; i < elements.length; i++) {
+        let element = $(elements[i]);   
+        let name = element.closest("tr").find("td:nth-child(2)").text();
+        element.append('<input type="checkbox" class="editTKBcheckbox" style="margin-left: 10px;" name=' + name + '>') //Thêm checkbox mới
+    }
+}
 
 
 //Khi click vào checkbox, update lịch học
@@ -412,7 +442,7 @@ $(document).on("click", ".editTKBcheckbox", function (e) {
     let checkbox = $(this);
     //Nhớ ô đã tick
     
-
+    
     if ($("#datetimepicker").val() == "") {
         alert("Chưa chọn ngày bắt đầu tuần đầu tiên");
         if (checkbox.prop("checked") == true) checkbox.prop("checked", false); //Chỉnh checkbox về như cũ
@@ -423,10 +453,11 @@ $(document).on("click", ".editTKBcheckbox", function (e) {
     let name = checkbox.closest("tr").find("td:nth-child(2)").text();
     let text = checkbox.closest("tr").find("td:nth-child(10)").text();
     let malop = checkbox.closest("tr").find("td:nth-child(7)").text();
+    let to = checkbox.closest("tr").find("td:nth-child(5)").text(); //tổ thực hành
 
-
-    GM_setValue(name + malop, checkbox.prop("checked"));
-    let result = getData(text, name);
+    GM_setValue(name + malop + to, checkbox.prop("checked")); //set ô này trạng thái
+    GM_setValue("clicked_" + name, malop + to); //set ô này đã click là mã lớp này
+    let result = getData(text, name, malop, to);
 
 
 
@@ -434,43 +465,68 @@ $(document).on("click", ".editTKBcheckbox", function (e) {
 
 });
 
+function monDaDien() {
+    if (!unsafeWindow.maMon) return;
+    let danhsachmonhoc = $(".danhsachmonhoc")
+    danhsachmonhoc.empty(); //xoá hết các div môn đang có
+    for (let [key, value] of unsafeWindow.maMon) {
+        if (GM_getValue("clicked_" + key) != undefined && GM_getValue("clicked_" + key) != false) {
+            danhsachmonhoc.append(`<div class="monhocdadk">${key} - ${value}</div>`);
+        }
+    }
+
+} setInterval(monDaDien, 200)
+
 //Cập nhật box liên tục
 function keepUpdateCheckBox() {
+    if (!unsafeWindow.maMon) {
+        return;
+    } 
     let checkboxs = $(".editTKBcheckbox");
     for (let i = 0; i < checkboxs.length; i++) {
         let checkbox = $(checkboxs[i]);
         let name = checkbox.closest("tr").find("td:nth-child(2)").text();
         let text = checkbox.closest("tr").find("td:nth-child(10)").text();
         let malop = checkbox.closest("tr").find("td:nth-child(7)").text();
-        let result = GM_getValue(name + malop);
-        if (result == undefined) continue;
-        if (checkbox.prop("checked") != result) {
-            //update lại trạng thái nút
-            console.log("Cập nhật lại trạng thái checkbox " + name + " " + malop + " " + result)
-            checkbox.prop("checked", result);
+        let to = checkbox.closest("tr").find("td:nth-child(5)").text(); //tổ thực hành
+
+        //nếu đã click ô khác
+        if (GM_getValue("clicked_" + name) != malop + to) {
+            GM_setValue(name + malop + to, false);
         }
 
-        //Update lại table
-        result = getData(text, name);
-        updateTable(result, checkbox.prop("checked"));
+        let result = GM_getValue(name + malop + to);
+        if (result == undefined) continue;
+        if (checkbox.prop("checked") != result) {
+
+            //update lại trạng thái nút theo lưu state
+            checkbox.prop("checked", result);
+            //Update lại table
+            result = getData(text, name, malop, to);
+            console.log("Cập nhật lại bảng cho môn tự động " + name)
+            updateTable(result, checkbox.prop("checked"));
+            
+        }
     }
-}setInterval(keepUpdateCheckBox, 1000);
+}setInterval(keepUpdateCheckBox, 200);
 
 
     class Lecture {
-        constructor(name, day, time, room, teacher, date) {
+        constructor(name, day, time, room, teacher, date, malop, to) {
             this.name = name;
             this.day = day;
             this.time = time;
             this.room = room;
             this.teacher = teacher;
             this.date = date;
+            this.malop = malop;
+            this.to = to;
         }
 
     }
 
 
-    function getData(inputString, name) {
+    function getData(inputString, name, malop, to) {
         const result = [];
         var count = 0, lastplace = 0;
         var day = "none", time = "none", room = "none", teacher = "none", date = "none";
@@ -483,7 +539,7 @@ function keepUpdateCheckBox() {
             room = temp[2];
             teacher = temp[3];
             date = temp[temp.length - 1];
-            result.push(new Lecture(name, day, time, room, teacher, date));
+            result.push(new Lecture(name, day, time, room, teacher, date, malop, to));
         }
         return result;
     }
@@ -529,8 +585,10 @@ function keepUpdateCheckBox() {
             tkb_div.append(tables[i])
 
         }
-        tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-07-03"></input><br></div>');
+        tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-08-14"></input><br></div>');
         tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
+        tkb_div.append('<div class="danhsachmonhoc_text">Các môn đã đăng ký</div>')
+        tkb_div.append('<div class="danhsachmonhoc"></div>')
 
         //Thêm vào trang
         $('body').prepend(tkb_div)
@@ -571,9 +629,9 @@ function keepUpdateCheckBox() {
                     const hour = extractHoursFromString(lecturelist[i].time);
                     for (let j = hour[0]; j <= hour[1]; j++) {
                         var vitri = 1 + 14 * 70 * (parseInt(diffDays / 70)) + (j - 7) * 70 + (diffDays - 70 * (parseInt(diffDays / 70)));
-                        console.log("vị trí " + vitri + " " + lecturelist[i].name + " " + parseInt(diffDays / 70) + " " + (j - 7) + " " + diffDays)
-                        if (state) dienLich(vitri, lecturelist[i].name)
-                        else xoaLich(vitri, lecturelist[i].name)
+                    
+                        if (state) dienLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
+                        else xoaLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
                     }
                 }
                 loop.setDate(loop.getDate() + 1);
@@ -601,10 +659,10 @@ function keepUpdateCheckBox() {
     }
 
     //Điền vào lịch
-    function dienLich(vitri, name) {
-        console.log("Điền lịch " + name + " vào vị trí " + vitri);
+    function dienLich(vitri, name, malop, to) {
+        
         var element = document.getElementById(vitri);
-        element.classList.add(name);
+        element.classList.add(name + "_" + malop + "_" + to);
         var ele = $("#" + vitri);
         if (element.classList.length == 2) {
             ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
@@ -620,10 +678,9 @@ function keepUpdateCheckBox() {
     }
 
     //Xoá khỏi lịch
-    function xoaLich(vitri, name) {
-        console.log("Xoá lịch " + name + " khỏi vị trí " + vitri);
+    function xoaLich(vitri, name, malop, to) {
         var element = document.getElementById(vitri);
-        element.classList.remove(name);
+        element.classList.remove(name + "_" + malop + "_" + to);
         var ele = $("#" + vitri);
         if (element.classList.length == 2) {
             ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
