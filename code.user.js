@@ -528,12 +528,12 @@ function keepUpdateCheckBox() {
 
     function getData(inputString, name, malop, to) {
         const result = [];
-        var count = 0, lastplace = 0;
-        var day = "none", time = "none", room = "none", teacher = "none", date = "none";
+        let count = 0, lastplace = 0;
+        let day = "none", time = "none", room = "none", teacher = "none", date = "none";
         inputString = inputString.replaceAll("Chủ nhật", "Thứ 8")
-        var dataSplit = inputString.split("Thứ");
-        for (var i = 1; i < dataSplit.length; i++) {
-            var temp = dataSplit[i].split(",");
+        let dataSplit = inputString.split("Thứ");
+        for (let i = 1; i < dataSplit.length; i++) {
+            let temp = dataSplit[i].split(",");
             day = "Thứ" + temp[0];
             time = temp[1];
             room = temp[2];
@@ -545,7 +545,7 @@ function keepUpdateCheckBox() {
     }
 
     function drawTable() {
-        var rows = 14; //14 tiết
+        let rows = 14; //14 tiết
         var cols = 80;
         var tables = []
         var tkb_div = $('<div id="tkb_div"></div>')
@@ -558,7 +558,7 @@ function keepUpdateCheckBox() {
         tkb_div.append('<h5 style="text-align:center;">Lưu ý: Tool không sử dụng trong thời gian đăng ký, chỉ để xếp lịch trước</h2>')
 
         for (var i = 1; i <= 3; i++) {
-            var count = 0;
+            let count = 0;
             var table_id = "tkbPreview" + i;
             tables[i] = $('<table style="table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
             var tkb_separator, start_time_in_hr;
@@ -600,36 +600,42 @@ function keepUpdateCheckBox() {
 
         console.log("Cập nhật bảng cho môn " + lecturelist[0].name)
 
-        var start_date = new Date($("#datetimepicker").val());
-
+        let start_date = new Date($("#datetimepicker").val());
+        start_date.setHours(0, 0, 0, 0);
         for (let i = 0; i < lecturelist.length; i++) {
-            var time = lecturelist[i].date;
+            //console.log("Cập nhật bảng cho môn " + lecturelist[i].name + " " + lecturelist[i].day + " " + lecturelist[i].time + " " + lecturelist[i].room + " " + lecturelist[i].teacher + " " + lecturelist[i].date)
+            let time = lecturelist[i].date;
+            let start_time, end_time, start_time_date, end_time_date;
             if (time[9] == 'đ') {
-                var start_time = time.substring(0, 9);
-                var end_time = time.substring(13, 21);
-                var start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
-                var end_time_date = new Date("20" + end_time.substring(6, 10), end_time.substring(3, 5) - 1, end_time.substring(0, 2));
+                 start_time = time.substring(0, 9);
+                 end_time = time.substring(13, 21);
+                 start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
+                 end_time_date = new Date("20" + end_time.substring(6, 10), end_time.substring(3, 5) - 1, end_time.substring(0, 2));
             } else {
+                
                 start_time = time.substring(0, 9);
-                start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5), start_time.substring(0, 2));
-                end_time_date = start_time_date;
+                start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
+                end_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
             }
-            var loop = start_time_date;
+            let loop = start_time_date;
             //Thứ 8 = 8
-            var ngayTrongTuan = lecturelist[i].day[4];
+            let ngayTrongTuan = lecturelist[i].day[4];
+
             if (ngayTrongTuan == 8) ngayTrongTuan = 0;
             else ngayTrongTuan = ngayTrongTuan - 1;
+            //console.log("----------- " + start_time_date + " " + end_time_date + " " + time[9])
 
 
             //đi qua chuỗi ngày để update vào lịch
             while (loop <= end_time_date) {
+                //console.log("loop " + loop + " " + end_time_date)
                 if (loop.getDay() == ngayTrongTuan) {
                     const diffTime = Math.abs(loop - start_date);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     const hour = extractHoursFromString(lecturelist[i].time);
                     for (let j = hour[0]; j <= hour[1]; j++) {
-                        var vitri = 1 + 14 * 70 * (parseInt(diffDays / 70)) + (j - 7) * 70 + (diffDays - 70 * (parseInt(diffDays / 70)));
-                    
+                        let vitri = 1 + 14 * 70 * (parseInt(diffDays / 70)) + (j - 7) * 70 + (diffDays - 70 * (parseInt(diffDays / 70)));
+                        //console.log("Điền vào vị trí " + vitri + " cho môn " + lecturelist[i].name + " gio " + j + " thudung " + ngayTrongTuan + " chenhlech " + diffDays + " thuloop " + loop.getDay() + " thucheck " + lecturelist[i].day + " cur " + loop + " start " + start_date + " " + diffTime)
                         if (state) dienLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
                         else xoaLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
                     }
