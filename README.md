@@ -55,6 +55,13 @@ Video hướng dẫn: https://www.youtube.com/watch?v=UYY8gMDWGD8
 * This software is licensed under MIT License.
 * [Read More](https://choosealicense.com/licenses/mit/) on the license.
 
+### Giúp đỡ tôi bằng cách chia sẻ hoặc tặng sao
+
+![](https://raw.githubusercontent.com/quochung-cyou/WebDocument/main/asset/stars.gif)
+
+### Thông tin liên hệ 
+
+> Nếu có bất kỳ nội dung nào liên quan còn thiếu，hãy tạo [issues](https://github.com/quochung-cyou/QLDT_Enhancer/issues) cho nó, tôi sẽ theo dõi và cải thiện。
 
 ```
 MIT License
