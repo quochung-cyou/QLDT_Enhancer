@@ -305,7 +305,7 @@ class Lecture {
 function getData(inputString, name) {
     const result = [];
     var count = 0, lastplace = 0;
-    var day, time, room, teacher, date;
+    var day = "none", time = "none", room = "none", teacher = "none", date = "none";
     inputString = inputString.replaceAll("Chủ nhật", "Thứ 8")
     var dataSplit = inputString.split("Thứ");
     for (var i = 1; i < dataSplit.length; i++) {
@@ -340,11 +340,7 @@ function drawTable() {
         for (var r = 0; r < rows; r++) {
             if (r % 2) tkb_separator = 'border-bottom:2px solid blue;'
             else tkb_separator = '';
-            if (i < 2) {
-                start_time_in_hr = r + 7;
-            } else {
-                start_time_in_hr = r + 8;
-            }
+            start_time_in_hr = r + 7;
             //Thêm hàng, thời gian bắt đầu tiết
             var tr = $('<tr class="responsive-table__row" style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + '</td>');
             for (var c = 0; c < cols; c++) {
