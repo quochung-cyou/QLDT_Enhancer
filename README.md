@@ -12,7 +12,18 @@
 
 * Sử dụng script theo nhu cầu của bạn, mình không chịu trách nhiệm trước các vấn đề liên quan đến việc sử dụng script này.
 
-### Prerequisites and Setup
+
+## Feature
+- [x] Tool xem xếp lịch TKB theo QLDT
+- [x] Chọn môn bằng dropdown nhanh chóng, đỡ phải tìm kiếm hay lướt như QLDT cũ
+- [x] Tự động cập nhật lịch thay đổi
+- [x] Chỉnh sửa giao diện thêm một chút
+- [x] Tự động giữ kết nối, tránh bị out session
+
+
+
+
+## Prerequisites and Setup
 
 * Để sử dụng, đầu tiên bạn cần tải Tamper Monkey về trình duyệt của bạn, sau đó tải script về và cài đặt. (https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=vi)
 * Sau đó vào link sau để tiến hành cài đặt (https://raw.githubusercontent.com/quochung-cyou/QLDT_Enhancer/main/code.user.js)
