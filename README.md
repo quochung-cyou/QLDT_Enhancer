@@ -1,5 +1,5 @@
-# QLDT Enhancer (Beta Branch)
-# Nhánh này thường có nhiều lỗi hơn, dù nhánh chính vẫn đã rất bug. 
+# QLDT Enhancer 
+
 
 
 Bạn cũng có thể thử bản beta với nhiều chức năng hơn và nhiều lỗi hơn :v : https://github.com/quochung-cyou/QLDT_Enhancer/tree/beta
@@ -23,8 +23,8 @@ Bạn cũng có thể thử bản beta với nhiều chức năng hơn và nhi�
 - [x] Tự động cập nhật lịch thay đổi
 - [x] Chỉnh sửa giao diện thêm một chút
 - [x] Tự động giữ kết nối, tránh bị out session
-- [x] Danh sách môn đã đăng kí [BETA]
-- [x] Tránh đăng kí trùng 1 môn [BETA]
+- [x] Danh sách môn đã đăng kí 
+- [x] Tránh đăng kí trùng 1 môn 
 
 
 
