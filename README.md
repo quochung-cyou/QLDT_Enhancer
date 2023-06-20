@@ -1,5 +1,8 @@
 # QLDT Enhancer
 
+
+Bạn cũng có thể thử bản beta với nhiều chức năng hơn và nhiều lỗi hơn :v : https://github.com/quochung-cyou/QLDT_Enhancer/tree/beta
+
 ## Author
 
 * quochungcyou
