@@ -72,8 +72,8 @@ GM_addStyle(`
         height:60px;
         bottom:40px;
         right:40px;
-        color: #FFF;
-        background: #ffffff;
+        color: #000000;
+        background: #FFF;
         border-radius: 50%;
         border: none;
         transition: box-shadow 400ms cubic-bezier(0.2, 0, 0.7, 1), transform 200ms cubic-bezier(0.2, 0, 0.7, 1);
@@ -89,6 +89,10 @@ GM_addStyle(`
 
     .editTKB {
         background-color:#10470b !important;
+    }
+
+    .editTKB > i {
+        color: #fff !important;
     }
 
     #tkb_div {
@@ -244,30 +248,38 @@ window.onload = function () {
 function tkbLich() {
     var float = $(".float");
     if (float.hasClass("editTKB")) {
-        float.removeClass("editTKB");
-        //Thay nút edit cũ
+        //Tắt chế độ TKB
         removeEdit();
-        $("#tkb_div").attr("style", "display: none !important")
+        
     } else {
-        float.addClass("editTKB");
-        //Thay nút edit mới
+        //Bật chế độ TKB
         addEdit();
-        $("#tkb_div").attr("style", "display: block !important")
+        
     }
 }
 
 
 //Thay nút edit
 function addEdit() {
-    console.log("Bật chế độ TKB");
-    $(".custom-control").attr("style", "display: none !important");
     let elements = $(".clickable.ng-untouched.ng-pristine.ng-valid");
-    elements.append(`<input type="checkbox" class="editTKBcheckbox" style="margin-left: 10px;">`)
+    if (elements.length == 0) {
+        alert("Không tìm thấy môn học, vui lòng đợi trang load xong hoàn toàn dữ liệu");
+        return;
+    }
+    var float = $(".float");
+    float.addClass("editTKB"); //Hiện nút edit sẽ có màu khác
+    console.log("Bật chế độ TKB");
+    $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
+    $("#tkb_div").attr("style", "display: block !important") //Hiện TKB
+    elements.append(`<input type="checkbox" class="editTKBcheckbox" style="margin-left: 10px;">`) //Thêm checkbox mới
 }
 function removeEdit() {
     console.log("Tắt chế độ TKB");
-    $(".custom-control").attr("style", "display: block !important");
-    $(".editTKBcheckbox").remove();
+    var float = $(".float"); 
+    float.removeClass("editTKB"); //Tắt nút edit
+    $(".custom-control").attr("style", "display: block !important"); //Hiển thị lại các checkbox mặc định
+    $(".editTKBcheckbox").remove(); //Xoá checkbox mới
+    $("#tkb_div").attr("style", "display: none !important") //Ẩn TKB
 }
 
 //Khi click vào checkbox, update lịch học
