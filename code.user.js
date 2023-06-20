@@ -403,21 +403,26 @@ function removeEdit() {
 
 //Khi click vào checkbox, update lịch học
 $(document).on("click", ".editTKBcheckbox", function (e) {
-
     let checkbox = $(this);
+    //Nhớ ô đã tick
+    
+
     if ($("#datetimepicker").val() == "") {
         alert("Chưa chọn ngày bắt đầu tuần đầu tiên");
         if (checkbox.prop("checked") == true) checkbox.prop("checked", false); //Chỉnh checkbox về như cũ
         else checkbox.prop("checked", true);
         return;
     }
+
     let name = checkbox.closest("tr").find("td:nth-child(2)").text();
     let text = checkbox.closest("tr").find("td:nth-child(10)").text();
     let malop = checkbox.closest("tr").find("td:nth-child(7)").text();
+
+    
+    GM_setValue(name + malop, checkbox.prop("checked"));
     let result = getData(text, name);
 
-    //Nhớ ô đã tick
-    GM_setValue(name + malop, result);
+
 
     updateTable(result, checkbox.prop("checked"));
 
@@ -435,12 +440,15 @@ function keepUpdateCheckBox() {
         if (result == undefined) continue;
         if (checkbox.prop("checked") != result) {
             //update lại trạng thái nút
+            console.log("Cập nhật lại trạng thái checkbox " + name + " " + malop + " " + result)
             checkbox.prop("checked", result);
         }
+
+        //Update lại table
         result = getData(text, name);
         updateTable(result, checkbox.prop("checked"));
     }
-}setInterval(keepUpdateCheckBox, 100);
+}setInterval(keepUpdateCheckBox, 1000);
 
 
     class Lecture {
