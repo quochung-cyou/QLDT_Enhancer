@@ -1,4 +1,5 @@
-# QLDT Enhancer
+# QLDT Enhancer (Beta Branch)
+# Nhánh này thường có nhiều lỗi hơn, dù nhánh chính vẫn đã rất bug. 
 
 ## Author
 
@@ -26,7 +27,7 @@
 ## Prerequisites and Setup
 
 * Để sử dụng, đầu tiên bạn cần tải Tamper Monkey về trình duyệt của bạn, sau đó tải script về và cài đặt. (https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=vi)
-* Sau đó vào link sau để tiến hành cài đặt (https://raw.githubusercontent.com/quochung-cyou/QLDT_Enhancer/main/code.user.js)
+* Sau đó vào link sau để tiến hành cài đặt (https://raw.githubusercontent.com/quochung-cyou/QLDT_Enhancer/beta/code.user.js)
 * Truy cập QLDT -> Xem thời khoá biểu tuần -> Lấy ngày tháng năm của kì chuẩn bị học. Ví dụ 03/08/2023
 * Truy cập QLDT -> Đăng ký môn -> Đăng ký môn học theo CTDT kế hoạch
 * Ấn nút trắng góc dưới bên phải màn hình để bật script
