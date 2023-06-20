@@ -156,7 +156,6 @@ GM_addStyle(`
     .chonngaydiv {
         text-align: center;
         margin-bottom: 10px;
-        margin-top: 30px;
         background-color: #fefefe;
         border-collapse: collapse;
         border-radius: 10px;
@@ -165,7 +164,19 @@ GM_addStyle(`
         justify-content: center;
         margin-left: auto;
         margin-right: auto;
+    }
 
+    .dropdownlecture {
+        text-align: center;
+        margin-bottom: 10px;
+        margin-top: 30px;
+        background-color: #fefefe;
+        border-collapse: collapse;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
     }
 
     input[type="date"]::-webkit-datetime-edit, input[type="date"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button {
@@ -207,13 +218,6 @@ GM_addStyle(`
     `
 );
 
-//Remove banner
-function removeBanner() {
-    $("img[alt='image slide']").remove()
-}
-
-setInterval(removeBanner, 5000);
-
 
 //Giữ trang k bị đóng (5s ping 1 lần)
 function keepAlive() {
@@ -234,6 +238,7 @@ window.onload = function () {
         unsafeWindow.removeEdit = removeEdit;
         unsafeWindow.getData = getData;
         unsafeWindow.drawTable = drawTable;
+        unsafeWindow.caoMaMon = caoMaMon;
     }
 
     const button = document.createElement('button');
@@ -247,20 +252,65 @@ window.onload = function () {
 
 
 
-
-
 }
 
+
+
+//Cào mã môn học và tên môn học
+function caoMaMon() {
+    var maMon = new Map();
+    let elements = $(".editTKBcheckbox");
+    for (let i = 0; i < elements.length; i++) {
+        let ele = $(elements[i]);
+        let data = ele.closest("tr"); //tìm lại data của cả hàng
+        let ma = data.find("td:nth-child(2)").text();
+        let ten = data.find("td:nth-child(3)").text();
+        console.log(ma + " " + ten)
+        maMon.set(ma, ten);
+    }
+    alert("Đã cào xong mã môn học và tên môn học, vui lòng chọn môn học trong dropdown")
+    //Thêm vào dropdown
+    var dropdown = $(".dropdownlecture");
+    for (let [key, value] of maMon) {
+        dropdown.append(`<option value="${key}">${key} - ${value}</option>`);
+    }
+}
+
+//Xử lí chọn môn học trong dropdown
+$(document).on("change", ".dropdownlecture", function (e) {
+    let dropdown = $(this);
+    let name = dropdown.val();
+    let table = $(".table-sm");
+    let findInputBox = table.find("thead > tr:nth-child(2) > td:nth-child(2) > input");
+    findInputBox.val(name).change();
+    findInputBox = document.querySelector(".table-sm > thead > tr:nth-child(2) > td:nth-child(2) > input");
+    findInputBox.focus();
+    const EVENT_OPTIONS = { bubbles: true, cancelable: false, composed: true };
+    const EVENTS = {
+        BLUR: new Event("blur", EVENT_OPTIONS),
+        CHANGE: new Event("change", EVENT_OPTIONS),
+        INPUT: new Event("input", EVENT_OPTIONS),
+    };
+    const tracker = findInputBox._valueTracker;
+    tracker && tracker.setValue("5454545454545454");
+    findInputBox.dispatchEvent(EVENTS.INPUT);
+    findInputBox.dispatchEvent(EVENTS.BLUR);
+})
+
+
+//Xử lí nút bấm
 function tkbLich() {
     var float = $(".float");
     if (float.hasClass("editTKB")) {
         //Tắt chế độ TKB
         removeEdit();
-        
+
     } else {
         //Bật chế độ TKB
         addEdit();
-        
+        //Cào mã môn học và tên môn học
+        caoMaMon();
+
     }
 }
 
@@ -281,7 +331,7 @@ function addEdit() {
 }
 function removeEdit() {
     console.log("Tắt chế độ TKB");
-    var float = $(".float"); 
+    var float = $(".float");
     float.removeClass("editTKB"); //Tắt nút edit
     $(".custom-control").attr("style", "display: block !important"); //Hiển thị lại các checkbox mặc định
     $(".editTKBcheckbox").remove(); //Xoá checkbox mới
@@ -349,6 +399,7 @@ function drawTable() {
     tkb_div.append('<h5 style="text-align:center;">Lưu ý: Ngày đầu tiên của tuần có thể xem ở tkb theo tuần</h2>')
     tkb_div.append('<h5 style="text-align:center;">Các lỗi vui lòng báo về nguyenquochung.workvn@gmail.com</h2>')
     tkb_div.append('<h5 style="text-align:center;">Chúc bạn học tập tốt!</h2>')
+    tkb_div.append('<h5 style="text-align:center;">Lưu ý: Tool không sử dụng trong thời gian đăng ký, chỉ để xếp lịch trước</h2>')
 
     for (var i = 1; i <= 3; i++) {
         var count = 0;
@@ -379,7 +430,7 @@ function drawTable() {
 
     }
     tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date"></input><br></div>');
-
+    tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
 
     //Thêm vào trang
     $('body').prepend(tkb_div)
@@ -419,8 +470,8 @@ function updateTable(lecturelist, state) {
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 const hour = extractHoursFromString(lecturelist[i].time);
                 for (let j = hour[0]; j <= hour[1]; j++) {
-                    var vitri = 1 + 14*70*(parseInt(diffDays/70)) + (j-7)*70 + (diffDays - 70*(parseInt(diffDays/70)));
-                    console.log("vị trí " + vitri + " " + lecturelist[i].name + " " + parseInt(diffDays/70) + " " + (j-7) + " " + diffDays)
+                    var vitri = 1 + 14 * 70 * (parseInt(diffDays / 70)) + (j - 7) * 70 + (diffDays - 70 * (parseInt(diffDays / 70)));
+                    console.log("vị trí " + vitri + " " + lecturelist[i].name + " " + parseInt(diffDays / 70) + " " + (j - 7) + " " + diffDays)
                     if (state) dienLich(vitri, lecturelist[i].name)
                     else xoaLich(vitri, lecturelist[i].name)
                 }
@@ -434,18 +485,18 @@ function updateTable(lecturelist, state) {
 function extractHoursFromString(str) {
     const regex = /từ\s*(\d{1,2}):(\d{2})\s*đến\s*(\d{1,2}):(\d{2})/;
     const match = str.match(regex);
-  
+
     if (!match) {
-      return null;
+        return null;
     }
-  
+
     const startHour = parseInt(match[1]);
     const endHour = parseInt(match[3]);
-  
+
     if (startHour > endHour) {
-      return null;
+        return null;
     }
-  
+
     return [startHour, endHour];
 }
 
