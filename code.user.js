@@ -306,6 +306,7 @@ window.onload = function () {
 //Cào mã môn học và tên môn học
 function caoMaMon() {
     var maMon = new Map();
+    maMon.clear();
     let elements = $(".editTKBcheckbox");
     for (let i = 0; i < elements.length; i++) {
         let ele = $(elements[i]);
@@ -323,10 +324,11 @@ function caoMaMon() {
     alert("Đã cào xong mã môn học và tên môn học, vui lòng chọn môn học trong dropdown")
     //Thêm vào dropdown
     var dropdown = $(".dropdownlecture");
+    dropdown.empty(); //xoá các dropdown cũ
     for (let [key, value] of maMon) {
         dropdown.append(`<option value="${key}">${key} - ${value}</option>`);
     }
-    if (!unsafeWindow.maMon) unsafeWindow.maMon = maMon;
+    unsafeWindow.maMon = maMon;
 }
 
 //Xử lí chọn môn học trong dropdown
