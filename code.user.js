@@ -3,7 +3,7 @@
 // @description Some enhance for QLDT PTIT by quochungcyou
 // @author      quochungcyou
 // @match      https://*.qldt.ptit.edu.vn/*
-// @version     BCVT.23.6.20
+// @version     BCVT.1.0.0
 // @grant    GM_addStyle
 // @grant   GM_getValue
 // @grant   GM_setValue
@@ -587,7 +587,7 @@ function keepUpdateCheckBox() {
         }
         tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-08-14"></input><br></div>');
         tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
-        tkb_div.append('<div class="danhsachmonhoc_text">Các môn đã đăng ký</div>')
+        tkb_div.append('<div class="danhsachmonhoc_text"><strong>Các môn đã đăng ký<strong></div>')
         tkb_div.append('<div class="danhsachmonhoc"></div>')
 
         //Thêm vào trang
