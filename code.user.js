@@ -152,6 +152,10 @@ GM_addStyle(`
         border-bottom: 1px dotted black;
     }
 
+    .tooltiptext {
+        font-size: 8px;
+    }
+
     .cellqh .tooltiptext {
         visibility: hidden;
         width: 120px;
@@ -311,7 +315,7 @@ function caoMaMon() {
         let to  = data.find("td:nth-child(5)").text(); //tổ thực hành
         GM_setValue(ma + lop + to, undefined); //Reset lưu state
         GM_setValue("clicked_" + ma, false);
-        GM_setValue(ma, ten); //Nhớ tên môn học
+        GM_setValue(ma + "_" + lop + "_" + to, ten); //Nhớ tên môn học
         maMon.set(ma, ten);
     }
     
@@ -652,7 +656,7 @@ function keepUpdateCheckBox() {
     function dienLich(vitri, name, malop, to) {
         
         var element = document.getElementById(vitri);
-        element.classList.add(name + malop + to);
+        element.classList.add(name + "_" + malop + "_" + to);
         var ele = $("#" + vitri);
         if (element.classList.length == 2) {
             ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
@@ -670,7 +674,7 @@ function keepUpdateCheckBox() {
     //Xoá khỏi lịch
     function xoaLich(vitri, name, malop, to) {
         var element = document.getElementById(vitri);
-        element.classList.remove(name + malop + to);
+        element.classList.remove(name + "_" + malop + "_" + to);
         var ele = $("#" + vitri);
         if (element.classList.length == 2) {
             ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
