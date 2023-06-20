@@ -328,6 +328,7 @@ function caoMaMon() {
     //Thêm vào dropdown
     var dropdown = $(".dropdownlecture");
     dropdown.empty(); //xoá các dropdown cũ
+    dropdown.append(`<option value="" class="label_dropdownlecture">Chọn môn</option>`);
     for (let [key, value] of maMon) {
         dropdown.append(`<option value="${key}">${key} - ${value}</option>`);
     }
