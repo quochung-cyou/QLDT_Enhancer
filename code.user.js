@@ -130,21 +130,26 @@ GM_addStyle(`
 
     .tkb_preview_table > thead > tr > th {
         color: #fff;
-        padding: 2px
+        padding: 0.5px;
         text-align: center;
     }
 
-    .responsive-table__row {
-        border-bottom: 1px solid #edeef2;
-        padding: 0 1.5rem;
+    .cellqh {
+        border: 1px solid green;
+        max-width: 8px;
+        max-height: 8px;
+        font-size: 8px;
     }
 
     .starttimerow {
-        padding: 5px;
+        padding: 1px;
         vertical-align: middle;
-        border-top: 1px solid #edeef2;
+        border-top: 0.2px solid #edeef2;
         background-color: #07689F;
         color: #fff;
+        max-width: 30px;
+        max-height: 10px;
+        font-size: 8px;
     }
 
     .chonngaydiv {
@@ -354,11 +359,11 @@ function drawTable() {
             else tkb_separator = '';
             start_time_in_hr = r + 7;
             //Thêm hàng, thời gian bắt đầu tiết
-            var tr = $('<tr class="responsive-table__row" style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + '</td>');
+            var tr = $('<tr class="responsive-table__row" style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + 'h00</td>');
             for (var c = 0; c < cols; c++) {
                 if ((c + 1) % 8) {
                     count++;
-                    $('<td id="' + (70 * (i - 1) * 14 + count) + '" style="border:solid green 0.1px;height:1px">' + "+" + '</td>').appendTo(tr);
+                    $('<td class="cellqh" id="' + (70 * (i - 1) * 14 + count) + '">' + "+" + '</td>').appendTo(tr);
                 } else {
                     //divider
                     $('<td style="height:0px; width: 15px; background-color: #fff"></td>').appendTo(tr);
