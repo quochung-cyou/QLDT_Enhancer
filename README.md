@@ -20,6 +20,8 @@
 - [x] Tự động cập nhật lịch thay đổi
 - [x] Chỉnh sửa giao diện thêm một chút
 - [x] Tự động giữ kết nối, tránh bị out session
+- [x] Danh sách môn đã đăng kí [BETA]
+- [x] Tránh đăng kí trùng 1 môn [BETA]
 
 
 
