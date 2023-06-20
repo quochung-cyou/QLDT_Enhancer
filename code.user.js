@@ -160,6 +160,9 @@ GM_addStyle(`
         display: block;
         float: left;
       }
+      .cellqh:hover .tooltiptext:not(:empty) {
+        visibility: visible;
+      }
       
       .cellqh:hover .tooltiptext {
         visibility: visible;
