@@ -332,7 +332,7 @@ function getData(inputString, name) {
         time = temp[1];
         room = temp[2];
         teacher = temp[3];
-        date = temp[4];
+        date = temp[temp.length - 1];
         result.push(new Lecture(name, day, time, room, teacher, date));
     }
     return result;
@@ -408,7 +408,7 @@ function updateTable(lecturelist, state) {
         var loop = start_time_date;
         //Thứ 8 = 8
         var ngayTrongTuan = lecturelist[i].day[4];
-        if (ngayTrongTuan == 8) ngayTrongTuan = 1;
+        if (ngayTrongTuan == 8) ngayTrongTuan = 0;
         else ngayTrongTuan = ngayTrongTuan - 1;
 
 
