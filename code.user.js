@@ -3,7 +3,7 @@
 // @description Some enhance for QLDT PTIT by quochungcyou
 // @author      quochungcyou
 // @match      https://*.qldt.ptit.edu.vn/*
-// @version     BCVT.1.0.0
+// @version     BCVT.1.0.0.3
 // @grant    GM_addStyle
 // @grant   GM_getValue
 // @grant   GM_setValue
