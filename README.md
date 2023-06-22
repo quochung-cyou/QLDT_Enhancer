@@ -32,7 +32,7 @@
 Video hướng dẫn: https://www.youtube.com/watch?v=UYY8gMDWGD8
 
 * Để sử dụng, đầu tiên bạn cần tải Tamper Monkey về trình duyệt của bạn, sau đó tải script về và cài đặt. (https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=vi)
-* Sau đó vào link sau để tiến hành cài đặt https://github.com/quochung-cyou/QLDT_Enhancer/raw/main/code.user.js
+* Sau đó vào link sau để tiến hành cài đặt 	https://greasyfork.org/scripts/469227-qldt-enhance-by-quochungcyou/code/QLDT%20Enhance%20by%20quochungcyou.user.js
 * Truy cập QLDT -> Xem thời khoá biểu tuần -> Lấy ngày tháng năm của kì chuẩn bị học. Ví dụ 03/08/2023
 * Truy cập QLDT -> Đăng ký môn -> Đăng ký môn học theo CTDT kế hoạch
 * Ấn nút trắng góc dưới bên phải màn hình để bật script

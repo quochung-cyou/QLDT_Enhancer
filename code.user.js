@@ -10,8 +10,8 @@
 // @grant unsafeWindow
 // @run-at      document-start
 // @require http://code.jquery.com/jquery-2.1.0.min.js
-// @downloadURL https://github.com/quochung-cyou/QLDT_Enhancer/raw/main/code.user.js
-// @updateURL https://github.com/quochung-cyou/QLDT_Enhancer/raw/main/code.user.js
+// @downloadURL 	https://greasyfork.org/scripts/469227-qldt-enhance-by-quochungcyou/code/QLDT%20Enhance%20by%20quochungcyou.user.js
+// @updateURL 	https://greasyfork.org/scripts/469227-qldt-enhance-by-quochungcyou/code/QLDT%20Enhance%20by%20quochungcyou.user.js
 // @license MIT
 
 // ==/UserScript==
