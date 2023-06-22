@@ -18,7 +18,10 @@
 
 
 //Some round corner for button
-GM_addStyle(`
+function addCss() {
+
+
+    GM_addStyle(`
     /* Tròn nút */
     .card-header {
         border-radius: 15px !important;
@@ -100,37 +103,19 @@ GM_addStyle(`
     }
 
     #tkb_div {
-        display: none;
-        z-index: 1;
         height: auto;
-        width: auto;
-        margin-left: 10%;
-        margin-right: 10%;
+        width: 80% !important;
+        margin-left: 10% !important;
+        margin-right: 10% !important;
         margin-top: 60px;
         align-items: center;
         justify-content: center;
         background-color: #fefefe;
-        border-collapse: collapse;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
     }
 
     .danhsachmonhoc_text {
         text-align: center;
         margin: auto;
-    }
-
-    .tkb_preview_table {
-        z-index: 1;
-        height: auto;
-        margin-left: auto;
-        margin-right: auto;
-        align-items: center;
-        justify-content: center;
-        background-color: #fefefe;
-        border-collapse: collapse;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
     }
 
     .tkb_preview_table > thead {
@@ -255,29 +240,14 @@ GM_addStyle(`
         left: 4px;
     }
 
-
-
-
-
-
-
-
-
     `
-);
+    );
 
 
-//Giữ trang k bị đóng (5s ping 1 lần)
-function keepAlive() {
-    var httpRequest = new XMLHttpRequest();
-    httpRequest.open('GET', "/");
-    httpRequest.send(null);
 }
 
-setInterval(keepAlive, 5000);
 
-
-
+var specialValue = 55546;
 
 //Khi load xong
 window.onload = function () {
@@ -287,29 +257,35 @@ window.onload = function () {
         unsafeWindow.addEdit = addEdit;
         unsafeWindow.removeEdit = removeEdit;
         unsafeWindow.getData = getData;
-        unsafeWindow.drawTable = drawTable;
         unsafeWindow.caoMaMon = caoMaMon;
     }
+    addCss();
+    const floatingButton = document.createElement('button');
+    floatingButton.innerHTML = `<button onclick="tkbLich()" class="float"><i class="fa fa-cogs"></i></button>`;
 
-    const button = document.createElement('button');
-    button.innerHTML = `<button onclick="tkbLich()" class="float"><i class="fa fa-cogs"></i></button>`;
+    document.body.appendChild(floatingButton)
 
-    document.body.appendChild(button)
-
-    //Thêm table
-    drawTable();
-    $("#tkb_div").attr("style", "display: none !important")
-
+    let elements = document.querySelectorAll(".clickable.ng-untouched.ng-pristine.ng-valid input[type='checkbox']");
+    for (let i = 0; i < elements.length; i++) {
+        let element = $(elements[i]);
+        if (element.prop("checked") == true) {
+            element.prop("checked", false);
+            let clickEvent = new Event("click");
+            elements[i].dispatchEvent(clickEvent);
+        }
+        
+    }
 
 
 }
 
 
-
 //Cào mã môn học và tên môn học
 function caoMaMon() {
     var maMon = new Map();
+    var dataTenMon = new Map();
     maMon.clear();
+    dataTenMon.clear();
     let elements = $(".editTKBcheckbox");
     for (let i = 0; i < elements.length; i++) {
         let ele = $(elements[i]);
@@ -317,13 +293,17 @@ function caoMaMon() {
         let ma = data.find("td:nth-child(2)").text();
         let ten = data.find("td:nth-child(3)").text();
         let lop = data.find("td:nth-child(7)").text();
-        let to  = data.find("td:nth-child(5)").text(); //tổ thực hành
+        let to = data.find("td:nth-child(5)").text(); //tổ thực hành
+        let lecture = getData(data.find("td:nth-child(10)").text(), ma, lop, to);
         GM_setValue(ma + lop + to, undefined); //Reset lưu state
         GM_setValue("clicked_" + ma, false);
         GM_setValue(ma + "_" + lop + "_" + to, ten); //Nhớ tên môn học
         maMon.set(ma, ten);
+        dataTenMon.set(ma, JSON.stringify(lecture));
+
     }
-    
+    console.log(maMon);
+
     alert("Đã cào xong mã môn học và tên môn học, vui lòng chọn môn học trong dropdown")
     //Thêm vào dropdown
     var dropdown = $(".dropdownlecture");
@@ -333,6 +313,7 @@ function caoMaMon() {
         dropdown.append(`<option value="${key}">${key} - ${value}</option>`);
     }
     unsafeWindow.maMon = maMon;
+    unsafeWindow.dataTenMon = dataTenMon;
 }
 
 //Xử lí chọn môn học trong dropdown
@@ -394,7 +375,7 @@ function tkbLich() {
     } else {
         //Bật chế độ TKB
         addEdit();
-        
+
 
     }
 }
@@ -411,9 +392,16 @@ function addEdit() {
     float.addClass("editTKB"); //Hiện nút edit sẽ có màu khác
     console.log("Bật chế độ TKB");
     //Cào mã môn học và thêm nút
+
+    //Thêm table
+    if ($("#tkb_div").length == 0) {
+        drawTable();
+        $("#tkb_div").attr("style", "display: none !important")
+    }
+
     addButton();
     caoMaMon();
-    
+
 }
 function removeEdit() {
     console.log("Tắt chế độ TKB");
@@ -426,24 +414,37 @@ function removeEdit() {
 
 //Thêm đống nút bấm custom
 function addButton() {
-    $(".editTKBcheckbox").remove();
-    $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
+    
+    //$(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
     $("#tkb_div").attr("style", "display: block !important") //Hiện TKB
-    let elements = $(".clickable.ng-untouched.ng-pristine.ng-valid"); //get form
+    //select like element but select input checkbox only
+    let elements = document.querySelectorAll(".clickable.ng-untouched.ng-pristine.ng-valid input[type='checkbox']");
     for (let i = 0; i < elements.length; i++) {
-        let element = $(elements[i]);   
-        let name = element.closest("tr").find("td:nth-child(2)").text();
-        element.append('<input type="checkbox" class="editTKBcheckbox" style="margin-left: 10px;" name=' + name + '>') //Thêm checkbox mới
+        if (elements[i].disabled) {
+            //nếu là disabled
+            let element = $(elements[i]);
+            $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
+            let name = element.closest("tr").find("td:nth-child(2)").text();
+            element = $(elements[i]).closest("form");
+    
+            if (element.find(".editTKBcheckbox").length == 0) {
+                element.append('<input type="checkbox" class="editTKBcheckbox" name=' + name + '>') //Thêm checkbox mới
+            }
+        } else {
+            elements[i].classList.add("editTKBcheckbox");
+            
+        }
+
     }
 }
 
 
-//Khi click vào checkbox, update lịch học
+//Khi click vào checkbox, update lịch học (IMPORTANT)
 $(document).on("click", ".editTKBcheckbox", function (e) {
     let checkbox = $(this);
     //Nhớ ô đã tick
-    
-    
+
+
     if ($("#datetimepicker").val() == "") {
         alert("Chưa chọn ngày bắt đầu tuần đầu tiên");
         if (checkbox.prop("checked") == true) checkbox.prop("checked", false); //Chỉnh checkbox về như cũ
@@ -457,7 +458,10 @@ $(document).on("click", ".editTKBcheckbox", function (e) {
     let to = checkbox.closest("tr").find("td:nth-child(5)").text(); //tổ thực hành
 
     GM_setValue(name + malop + to, checkbox.prop("checked")); //set ô này trạng thái
-    GM_setValue("clicked_" + name, malop + to); //set ô này đã click là mã lớp này
+    if (checkbox.prop("checked")) GM_setValue("clicked_" + name, malop + to); //set ô này đã click là mã lớp này
+    else if (checkbox.prop("checked") == false && GM_getValue("clicked_" + name) == malop + to) GM_setValue("clicked_" + name, false); //set ô này đã click xoá khỏi
+
+
     let result = getData(text, name, malop, to);
 
 
@@ -470,9 +474,14 @@ function monDaDien() {
     if (!unsafeWindow.maMon) return;
     let danhsachmonhoc = $(".danhsachmonhoc")
     danhsachmonhoc.empty(); //xoá hết các div môn đang có
-    for (let [key, value] of unsafeWindow.maMon) {
+    
+    for (let [key, value] of unsafeWindow.dataTenMon) {
         if (GM_getValue("clicked_" + key) != undefined && GM_getValue("clicked_" + key) != false) {
-            danhsachmonhoc.append(`<div class="monhocdadk">${key} - ${value}</div>`);
+            //get back data from string json
+            console.log("Đã đăng ký môn " + key + " " + GM_getValue("clicked_" + key))
+            value = JSON.parse(value);
+            let lec = new Lecture(value[0]["name"], value[0]["day"], value[0]["time"], value[0]["room"], value[0]["teacher"], value[0]["date"], value[0]["malop"], value[0]["to"]);
+            danhsachmonhoc.append(`<div class="monhoc">${lec.name} - ${unsafeWindow.maMon.get(lec.name)} - ${lec.teacher}</div>`)
         }
     }
 
@@ -480,9 +489,7 @@ function monDaDien() {
 
 //Cập nhật box liên tục
 function keepUpdateCheckBox() {
-    if (!unsafeWindow.maMon) {
-        return;
-    } 
+    if (!unsafeWindow.maMon) return;
     let checkboxs = $(".editTKBcheckbox");
     for (let i = 0; i < checkboxs.length; i++) {
         let checkbox = $(checkboxs[i]);
@@ -506,200 +513,209 @@ function keepUpdateCheckBox() {
             result = getData(text, name, malop, to);
             console.log("Cập nhật lại bảng cho môn tự động " + name)
             updateTable(result, checkbox.prop("checked"));
-            
+
         }
     }
-}setInterval(keepUpdateCheckBox, 200);
+} setInterval(keepUpdateCheckBox, 200);
 
 
-    class Lecture {
-        constructor(name, day, time, room, teacher, date, malop, to) {
-            this.name = name;
-            this.day = day;
-            this.time = time;
-            this.room = room;
-            this.teacher = teacher;
-            this.date = date;
-            this.malop = malop;
-            this.to = to;
-        }
-
+class Lecture {
+    constructor(name, day, time, room, teacher, date, malop, to) {
+        this.name = name;
+        this.day = day;
+        this.time = time;
+        this.room = room;
+        this.teacher = teacher;
+        this.date = date;
+        this.malop = malop;
+        this.to = to;
     }
 
+}
 
-    function getData(inputString, name, malop, to) {
-        const result = [];
-        let count = 0, lastplace = 0;
-        let day = "none", time = "none", room = "none", teacher = "none", date = "none";
-        inputString = inputString.replaceAll("Chủ nhật", "Thứ 8")
-        let dataSplit = inputString.split("Thứ");
-        for (let i = 1; i < dataSplit.length; i++) {
-            let temp = dataSplit[i].split(",");
-            day = "Thứ" + temp[0];
-            time = temp[1];
-            room = temp[2];
-            teacher = temp[3];
-            date = temp[temp.length - 1];
-            result.push(new Lecture(name, day, time, room, teacher, date, malop, to));
-        }
-        return result;
+
+function getData(inputString, name, malop, to) {
+    const result = [];
+    let count = 0, lastplace = 0;
+    let day = "none", time = "none", room = "none", teacher = "none", date = "none";
+    inputString = inputString.replaceAll("Chủ nhật", "Thứ 8")
+    let dataSplit = inputString.split("Thứ");
+    for (let i = 1; i < dataSplit.length; i++) {
+        let temp = dataSplit[i].split(",");
+        day = "Thứ" + temp[0];
+        time = temp[1];
+        room = temp[2];
+        teacher = temp[3];
+        date = temp[temp.length - 1];
+        result.push(new Lecture(name, day, time, room, teacher, date, malop, to));
     }
+    return result;
+}
 
-    function drawTable() {
-        let rows = 14; //14 tiết
-        var cols = 80;
-        var tables = []
-        var tkb_div = $('<div id="tkb_div"></div>')
-        tkb_div.append('<h4 style="text-align:center;">Made by quochung.cyou from ProPTIT with <3.</h1>')
-        tkb_div.append('<h5 style="text-align:center;">Cách sử dụng: Bật chế độ TKB, chọn ngày bắt đầu tuần đầu tiên, click vào checkbox để thêm/xoá môn học</h2>')
-        tkb_div.append('<h5 style="text-align:center;">Lưu ý: Chỉnh sửa TKB sẽ bị mất khi tải lại trang</h2>')
-        tkb_div.append('<h5 style="text-align:center;">Lưu ý: Ngày đầu tiên của tuần có thể xem ở tkb theo tuần</h2>')
-        tkb_div.append('<h5 style="text-align:center;">Các lỗi vui lòng báo về nguyenquochung.workvn@gmail.com</h2>')
-        tkb_div.append('<h5 style="text-align:center;">Chúc bạn học tập tốt!</h2>')
-        tkb_div.append('<h5 style="text-align:center;">Lưu ý: Tool không sử dụng trong thời gian đăng ký, chỉ để xếp lịch trước</h2>')
+function drawTable() {
+    let rows = 14; //14 tiết
+    let cols = 80;
+    let tables = []
+    let tkb_div = $('<div id="tkb_div" class="row d-flex justify-content-center pt-1"></div>')
+    tkb_div.append('<h4 style="text-align:center;">Made by quochung.cyou from ProPTIT with <3.</h1>')
+    tkb_div.append('<h5 style="text-align:center;">Cách sử dụng: Bật chế độ TKB, chọn ngày bắt đầu tuần đầu tiên, click vào checkbox để thêm/xoá môn học</h2>')
+    tkb_div.append('<h5 style="text-align:center;">Lưu ý: Chỉnh sửa TKB sẽ bị mất khi tải lại trang</h2>')
+    tkb_div.append('<h5 style="text-align:center;">Lưu ý: Ngày đầu tiên của tuần có thể xem ở tkb theo tuần</h2>')
+    tkb_div.append('<h5 style="text-align:center;">Các lỗi vui lòng báo về nguyenquochung.workvn@gmail.com</h2>')
+    tkb_div.append('<h5 style="text-align:center;">Chúc bạn học tập tốt!</h2>')
+    tkb_div.append('<h5 style="text-align:center;">Lưu ý: Tool không sử dụng trong thời gian đăng ký, chỉ để xếp lịch trước</h2>')
 
-        for (var i = 1; i <= 2; i++) {
-            let count = 0;
-            var table_id = "tkbPreview" + i;
-            tables[i] = $('<table style="table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
-            var tkb_separator, start_time_in_hr;
-            for (var r = 0; r < rows; r++) {
-                if (r % 2) tkb_separator = 'border-bottom:2px solid #ad171c;'
-                else tkb_separator = '';
-                start_time_in_hr = r + 7;
-                //Thêm hàng, thời gian bắt đầu tiết
-                var tr = $('<tr class="responsive-table__row" style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + 'h00</td>');
-                for (var c = 0; c < cols; c++) {
-                    if ((c + 1) % 8) {
-                        count++;
-                        $('<td class="cellqh" id="' + (70 * (i - 1) * 14 + count) + '">' + "+" + '<span class="tooltiptext"></span></td>').appendTo(tr);
-                    } else {
-                        //divider
-                        $('<td style="height:0px; width: 15px; background-color: #fff"></td>').appendTo(tr);
-                    }
+    for (let i = 1; i <= 2; i++) {
+        let count = 0;
+        let table_id = "tkbPreview" + i;
+        tables[i] = $('<table style="z-index:-100;table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
+        let tkb_separator, start_time_in_hr;
+        for (let r = 0; r < rows; r++) {
+            if (r % 2) tkb_separator = 'border-bottom:2px solid #ad171c;'
+            else tkb_separator = '';
+            start_time_in_hr = r + 7;
+            //Thêm hàng, thời gian bắt đầu tiết
+            let tr = $('<tr style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + '</td>');
+            for (let c = 0; c < cols; c++) {
+                if ((c + 1) % 8) {
+                    count++;
+                    $('<td class="cellqh" id="' + (70 * (i - 1) * 14 + count + specialValue) + '">' + "+" + '<span class="tooltiptext"></span></td>').appendTo(tr);
+                } else {
+                    //divider
+                    $('<td style="height:0px; width: 15px; background-color: #fff"></td>').appendTo(tr);
                 }
-                tr.appendTo(tables[i]);
             }
-
-
-            $('</tbody></table>').appendTo(tables[i]);
-            tkb_div.append(tables[i])
-
+            tr.appendTo(tables[i]);
         }
-        tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-08-14"></input><br></div>');
-        tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
-        tkb_div.append('<div class="danhsachmonhoc_text"><strong>Các môn đã đăng ký<strong></div>')
-        tkb_div.append('<div class="danhsachmonhoc"></div>')
 
-        //Thêm vào trang
-        $('body').prepend(tkb_div)
-        console.log("Đã thêm bảng TKB")
+
+        $('</tbody></table>').appendTo(tables[i]);
+        tkb_div.append(tables[i])
 
     }
+    tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-08-14"></input><br></div>');
+    tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
+    tkb_div.append('<div class="danhsachmonhoc_text"><strong>Các môn đã đăng ký<strong></div>')
+    tkb_div.append('<div class="danhsachmonhoc"></div>')
 
-    function updateTable(lecturelist, state) {
+    //Thêm vào trang
+    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(tkb_div)
+    console.log("Đã thêm bảng TKB")
 
-        console.log("Cập nhật bảng cho môn " + lecturelist[0].name)
+}
 
-        let start_date = new Date($("#datetimepicker").val());
-        start_date.setHours(0, 0, 0, 0);
-        for (let i = 0; i < lecturelist.length; i++) {
-            //console.log("Cập nhật bảng cho môn " + lecturelist[i].name + " " + lecturelist[i].day + " " + lecturelist[i].time + " " + lecturelist[i].room + " " + lecturelist[i].teacher + " " + lecturelist[i].date)
-            let time = lecturelist[i].date;
-            let start_time, end_time, start_time_date, end_time_date;
-            if (time[9] == 'đ') {
-                 start_time = time.substring(0, 9);
-                 end_time = time.substring(13, 21);
-                 start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
-                 end_time_date = new Date("20" + end_time.substring(6, 10), end_time.substring(3, 5) - 1, end_time.substring(0, 2));
-            } else {
-                
-                start_time = time.substring(0, 9);
-                start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
-                end_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
-            }
-            let loop = start_time_date;
-            //Thứ 8 = 8
-            let ngayTrongTuan = lecturelist[i].day[4];
+document.addEventListener('click', function(e) {
+    e = e || window.event;
+    var target = e.target || e.srcElement,
+        text = target.textContent || target.innerText;  
+    console.log(text + " " + target.className + " - " + target)
+     
+}, false);
 
-            if (ngayTrongTuan == 8) ngayTrongTuan = 0;
-            else ngayTrongTuan = ngayTrongTuan - 1;
-            //console.log("----------- " + start_time_date + " " + end_time_date + " " + time[9])
+function updateTable(lecturelist, state) {
+
+    console.log("Cập nhật bảng cho môn " + lecturelist[0].name + " " + state)
+
+    let start_date = new Date($("#datetimepicker").val());
+    start_date.setHours(0, 0, 0, 0);
+    for (let i = 0; i < lecturelist.length; i++) {
+        //console.log("Cập nhật bảng cho môn " + lecturelist[i].name + " " + lecturelist[i].day + " " + lecturelist[i].time + " " + lecturelist[i].room + " " + lecturelist[i].teacher + " " + lecturelist[i].date)
+        let time = lecturelist[i].date;
+        let start_time, end_time, start_time_date, end_time_date;
+        if (time[9] == 'đ') {
+            start_time = time.substring(0, 9);
+            end_time = time.substring(13, 21);
+            start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
+            end_time_date = new Date("20" + end_time.substring(6, 10), end_time.substring(3, 5) - 1, end_time.substring(0, 2));
+        } else {
+
+            start_time = time.substring(0, 9);
+            start_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
+            end_time_date = new Date("20" + start_time.substring(6, 10), start_time.substring(3, 5) - 1, start_time.substring(0, 2));
+        }
+        let loop = start_time_date;
+        //Thứ 8 = 8
+        let ngayTrongTuan = lecturelist[i].day[4];
+
+        if (ngayTrongTuan == 8) ngayTrongTuan = 0;
+        else ngayTrongTuan = ngayTrongTuan - 1;
+        //console.log("----------- " + start_time_date + " " + end_time_date + " " + time[9])
 
 
-            //đi qua chuỗi ngày để update vào lịch
-            while (loop <= end_time_date) {
-                //console.log("loop " + loop + " " + end_time_date)
-                if (loop.getDay() == ngayTrongTuan) {
-                    const diffTime = Math.abs(loop - start_date);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    const hour = extractHoursFromString(lecturelist[i].time);
-                    for (let j = hour[0]; j <= hour[1]; j++) {
-                        let vitri = 1 + 14 * 70 * (parseInt(diffDays / 70)) + (j - 7) * 70 + (diffDays - 70 * (parseInt(diffDays / 70)));
-                        //console.log("Điền vào vị trí " + vitri + " cho môn " + lecturelist[i].name + " gio " + j + " thudung " + ngayTrongTuan + " chenhlech " + diffDays + " thuloop " + loop.getDay() + " thucheck " + lecturelist[i].day + " cur " + loop + " start " + start_date + " " + diffTime)
-                        if (state) dienLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
-                        else xoaLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
-                    }
+        //đi qua chuỗi ngày để update vào lịch
+        while (loop <= end_time_date) {
+            //console.log("loop " + loop + " " + end_time_date)
+            if (loop.getDay() == ngayTrongTuan) {
+                const diffTime = Math.abs(loop - start_date);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const hour = extractHoursFromString(lecturelist[i].time);
+                for (let j = hour[0]; j <= hour[1]; j++) {
+                    let vitri = 1 + 14 * 70 * (parseInt(diffDays / 70)) + (j - 7) * 70 + (diffDays - 70 * (parseInt(diffDays / 70)));
+                    //console.log("Điền vào vị trí " + vitri + " cho môn " + lecturelist[i].name + " gio " + j + " thudung " + ngayTrongTuan + " chenhlech " + diffDays + " thuloop " + loop.getDay() + " thucheck " + lecturelist[i].day + " cur " + loop + " start " + start_date + " " + diffTime)
+                    if (state) dienLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
+                    else xoaLich(vitri, lecturelist[i].name, lecturelist[i].malop, lecturelist[i].to)
                 }
-                loop.setDate(loop.getDate() + 1);
             }
+            loop.setDate(loop.getDate() + 1);
         }
     }
+}
 
-    //lấy giờ kíp từ chuỗi
-    function extractHoursFromString(str) {
-        const regex = /từ\s*(\d{1,2}):(\d{2})\s*đến\s*(\d{1,2}):(\d{2})/;
-        const match = str.match(regex);
+//lấy giờ kíp từ chuỗi
+function extractHoursFromString(str) {
+    const regex = /từ\s*(\d{1,2}):(\d{2})\s*đến\s*(\d{1,2}):(\d{2})/;
+    const match = str.match(regex);
 
-        if (!match) {
-            return null;
-        }
-
-        const startHour = parseInt(match[1]);
-        const endHour = parseInt(match[3]);
-
-        if (startHour > endHour) {
-            return null;
-        }
-
-        return [startHour, endHour];
+    if (!match) {
+        return null;
     }
 
-    //Điền vào lịch
-    function dienLich(vitri, name, malop, to) {
-        
-        var element = document.getElementById(vitri);
-        element.classList.add(name + "_" + malop + "_" + to);
-        var ele = $("#" + vitri);
-        if (element.classList.length == 2) {
-            ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
-            ele.get(0).lastChild.nodeValue = "v"
+    const startHour = parseInt(match[1]);
+    const endHour = parseInt(match[3]);
 
-        } else if (element.classList.length > 2) {
-            ele.attr("style", "border:solid green 1px;height:1px;background-color: #ff0000"); //red
-            ele.get(0).lastChild.nodeValue = "x"
-        } else {
-            ele.attr("style", "border:solid green 1px;height:1px;background-color: #fff"); //white
-            ele.get(0).lastChild.nodeValue = "+"
-        }
+    if (startHour > endHour) {
+        return null;
     }
 
-    //Xoá khỏi lịch
-    function xoaLich(vitri, name, malop, to) {
-        var element = document.getElementById(vitri);
-        element.classList.remove(name + "_" + malop + "_" + to);
-        var ele = $("#" + vitri);
-        if (element.classList.length == 2) {
-            ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
-            ele.get(0).lastChild.nodeValue = "v"
+    return [startHour, endHour];
+}
 
-        } else if (element.classList.length > 2) {
-            ele.attr("style", "border:solid green 1px;height:1px;background-color: #ff0000"); //red
-            ele.get(0).lastChild.nodeValue = "x"
-        } else {
-            ele.attr("style", "border:solid green 1px;height:1px;background-color: #fff"); //white
-            ele.get(0).lastChild.nodeValue = "+"
-        }
+//Điền vào lịch
+function dienLich(vitri, name, malop, to) {
+    vitri += specialValue;
+    var element = document.getElementById(vitri);
+    element.classList.add(name + "_" + malop + "_" + to);
+    var ele = $("#" + vitri);
+    if (element.classList.length == 2) {
+        ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
+        ele.get(0).lastChild.nodeValue = "v"
+
+    } else if (element.classList.length > 2) {
+        ele.attr("style", "border:solid green 1px;height:1px;background-color: #ff0000"); //red
+        ele.get(0).lastChild.nodeValue = "x"
+    } else {
+        ele.attr("style", "border:solid green 1px;height:1px;background-color: #fff"); //white
+        ele.get(0).lastChild.nodeValue = "+"
     }
+}
+
+//Xoá khỏi lịch
+function xoaLich(vitri, name, malop, to) {
+    vitri += specialValue;
+    var element = document.getElementById(vitri);
+    element.classList.remove(name + "_" + malop + "_" + to);
+    var ele = $("#" + vitri);
+    if (element.classList.length == 2) {
+        ele.attr("style", "border:solid green 1px;height:1px;background-color: #32a852"); //green
+        ele.get(0).lastChild.nodeValue = "v"
+
+    } else if (element.classList.length > 2) {
+        ele.attr("style", "border:solid green 1px;height:1px;background-color: #ff0000"); //red
+        ele.get(0).lastChild.nodeValue = "x"
+    } else {
+        ele.attr("style", "border:solid green 1px;height:1px;background-color: #fff"); //white
+        ele.get(0).lastChild.nodeValue = "+"
+    }
+}
 
 
