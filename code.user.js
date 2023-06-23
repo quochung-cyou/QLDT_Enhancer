@@ -3,7 +3,7 @@
 // @description Some enhance for QLDT PTIT by quochungcyou
 // @author      quochungcyou
 // @match      https://*.qldt.ptit.edu.vn/*
-// @version     BCVT.1.0.3
+// @version     BCVT.1.0.4
 // @grant    GM_addStyle
 // @grant   GM_getValue
 // @grant   GM_setValue
@@ -18,10 +18,10 @@
 
 //
 //Some round corner for button
-function addCss() {
 
 
-    GM_addStyle(`
+
+GM_addStyle(`
     /* Tròn nút */
     .card-header {
         border-radius: 15px !important;
@@ -241,10 +241,10 @@ function addCss() {
     }
 
     `
-    );
+);
 
 
-}
+
 
 
 var specialValue = 55546;
@@ -259,7 +259,7 @@ window.onload = function () {
         unsafeWindow.getData = getData;
         unsafeWindow.caoMaMon = caoMaMon;
     }
-    addCss();
+
     const floatingButton = document.createElement('button');
     floatingButton.innerHTML = `<button onclick="tkbLich()" class="float"><i class="fa fa-cogs"></i></button>`;
 
@@ -273,7 +273,7 @@ window.onload = function () {
             let clickEvent = new Event("click");
             elements[i].dispatchEvent(clickEvent);
         }
-        
+
     }
 
 
@@ -414,28 +414,39 @@ function removeEdit() {
 
 //Thêm đống nút bấm custom
 function addButton() {
-    
+
     //$(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
     $("#tkb_div").attr("style", "display: block !important") //Hiện TKB
     //select like element but select input checkbox only
     let elements = document.querySelectorAll(".clickable.ng-untouched.ng-pristine.ng-valid input[type='checkbox']");
+    let check = 0;
     for (let i = 0; i < elements.length; i++) {
-        if (elements[i].disabled) {
-            //nếu là disabled
-            let element = $(elements[i]);
-            $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
-            let name = element.closest("tr").find("td:nth-child(2)").text();
-            element = $(elements[i]).closest("form");
-    
-            if (element.find(".editTKBcheckbox").length == 0) {
-                element.append('<input type="checkbox" class="editTKBcheckbox" name=' + name + '>') //Thêm checkbox mới
-            }
-        } else {
-            elements[i].classList.add("editTKBcheckbox");
-            
+        if (!elements[i].disabled) {
+            check = 1;
+            break;
         }
-
     }
+    if (check == 0) {
+        for (let i = 0; i < elements.length; i++) {
+            if (elements[i].disabled) {
+                let element = $(elements[i]);
+                $(".custom-control").attr("style", "display: none !important"); //Tắt các checkbox mặc định k click được
+                let name = element.closest("tr").find("td:nth-child(2)").text();
+                element = $(elements[i]).closest("form");
+
+                if (element.find(".editTKBcheckbox").length == 0) {
+                    element.append('<input type="checkbox" class="editTKBcheckbox" name=' + name + '>') //Thêm checkbox mới
+                }
+            }
+        }
+    } else {
+        for (let i = 0; i < elements.length; i++) {
+            if (!elements[i].disabled) {
+                elements[i].classList.add("editTKBcheckbox");
+            }
+        }
+    }
+
 }
 
 
@@ -474,7 +485,7 @@ function monDaDien() {
     if (!unsafeWindow.maMon) return;
     let danhsachmonhoc = $(".danhsachmonhoc")
     danhsachmonhoc.empty(); //xoá hết các div môn đang có
-    
+
     for (let [key, value] of unsafeWindow.dataTenMon) {
         if (GM_getValue("clicked_" + key) != undefined && GM_getValue("clicked_" + key) != false) {
             //get back data from string json
@@ -604,12 +615,12 @@ function drawTable() {
 
 }
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     e = e || window.event;
     var target = e.target || e.srcElement,
-        text = target.textContent || target.innerText;  
+        text = target.textContent || target.innerText;
     console.log(text + " " + target.className + " - " + target)
-     
+
 }, false);
 
 function updateTable(lecturelist, state) {
